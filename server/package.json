@@ -1,0 +1,23 @@
+{
+  "name": "UHD",
+  "version": "0.0.1",
+  "main": "index.js",
+  "description": "UHD",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:wangqin4377/HackDayTeam.git"
+  },
+  "devDependencies": {
+    "autod": "~2.0.1",
+    "jshint": "^2.7.0"
+  },
+  "dependencies": {
+    "copy-to": "~2.0.1",
+    "debug": "~2.2.0",
+    "fs-extra": "~0.18.4",
+    "process": "~0.11.1"
+  },
+  "engine": {
+    "node": ">=0.12.0"
+  }
+}

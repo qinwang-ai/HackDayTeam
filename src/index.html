@@ -3,21 +3,18 @@
 	<head>
 		<meta charset="utf-8" />
 		<title>templates</title>
+		<link rel="stylesheet" href = "css/index.css">
 		<script src="js/jquery-1.11.1.min.js"></script>
 		<script src="js/lufylegend-1.7.6.min.js"></script>
+		<script src="js/canvas.js"></script>
+		<script src="js/websocket.js"></script>
 	</head>
 	<body>
-		<div>
-			<header>
-			<h1>templates</h1>
-			</header>
-			<nav>
-			<p>Hellow World</p>
-			</nav>
-			<footer>
-			<p>&copy; Copyright  by lufy</p>
-			</footer>
-		</div>
+		<div id = "mylegend">loading...</div><br>
+		<script type>
+			var canvas = document.getElementById("canvas");
+			init(0,"mylegend",1024,768,main);	
+		</script>
 	</body>
 </html>
 

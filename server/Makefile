@@ -5,7 +5,7 @@ TIMEOUT = 3000
 MOCHA_OPTS =
 
 start:
-	@node --harmony ./start.js
+	@node --harmony ./app.js
 
 install:
 	@npm install \
@@ -13,31 +13,6 @@ install:
 
 jshint:
 	@./node_modules/.bin/jshint .
-
-test:
-	@NODE_ENV=test ./node_modules/.bin/mocha \
-		--harmony \
-		--bail \
-		--reporter $(REPORTER) \
-		--timeout $(TIMEOUT) \
-		--require should \
-		--require co-mocha \
-		$(MOCHA_OPTS) \
-		$(TESTS)
-
-test-cov cov:
-	@NODE_ENV=test node --harmony \
-		node_modules/.bin/istanbul cover --preserve-comments \
-		./node_modules/.bin/_mocha \
-		-- -u exports \
-		--reporter $(REPORTER) \
-		--timeout $(TIMEOUT) \
-		--require should \
-		--require co-mocha \
-		$(MOCHA_OPTS) \
-		$(TESTS)
-
-test-all: install jshint test cov
 
 clean:
 	@rm -rf node_modules
@@ -50,4 +25,4 @@ autod: install
 		-f "~"
 	@$(MAKE) install
 
-.PHONY: start install test test-all test-cov cov clean autod
+.PHONY: start install clean autod

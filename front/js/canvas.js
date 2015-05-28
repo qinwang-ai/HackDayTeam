@@ -45,7 +45,12 @@ function game_init(){
 function main(){
 	$(" #mylegend").width( width);
 	$(" #mylegend").css( "margin", "0 auto");
+	sound = new LSound();
+	sound.load("BGM.mp3");
 	load_char_images();
+	sound.addEventListener( LEvent.COMPLETE, function (){
+		sound.play( 0, Infinity);
+	});
 }
 function display_char_now(){
 	char_layerA.removeAllChild();
@@ -58,7 +63,6 @@ function display_char(){
 	point_A = 1;
 	back_layer.addEventListener( LEvent.ENTER_FRAME, display_char_now);
 }
-
 
 
 

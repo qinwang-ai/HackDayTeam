@@ -32,6 +32,7 @@ function main(){
 	);
 }
 function gameInit(){
+	console.log( imglist);
 	showList.push(new LBitmapData(imglist["shitou"]));
 	showList.push(new LBitmapData(imglist["jiandao"]));
 	showList.push(new LBitmapData(imglist["bu"]));

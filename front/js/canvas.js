@@ -1,6 +1,6 @@
 function load_char_images(){
 	var json_str = "([";
-	for (var i = 0;i<=imgs_count;i++){
+	for (var i = 0;i<=imgs_countA;i++){
 		var str = i.toString();
 		if(i<10)str = '0'+str;
 		if(i<100)str = '0'+str;
@@ -17,9 +17,12 @@ function load_char_images(){
 		game_init();
 	});
 }
-showList = new Array();
-imglist = {};
-imgs_count = 230;
+showListA = new Array();
+imglistA = {};
+imgs_countA = 230;
+showListB = new Array();
+imglistB = {};
+imgs_countB = 676;
 function game_init(){
 	showList.push( new LBitmapData( imglist["back"]));
 	// imglist->showList->now_showbitmap
@@ -39,6 +42,8 @@ function game_init(){
 	//display_char
 	char_layerA = new LSprite();
 	back_layer.addChild( char_layerA);
+	char_layerB = new LSprite();
+	back_layer.addChild( char_layerB);
 	display_char();
 }
 
@@ -63,7 +68,3 @@ function display_char(){
 	point_A = 1;
 	back_layer.addEventListener( LEvent.ENTER_FRAME, display_char_now);
 }
-
-
-
-

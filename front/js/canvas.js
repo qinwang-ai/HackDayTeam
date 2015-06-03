@@ -115,6 +115,10 @@ statusA_json = {
 		0:{
 			's':'89',
 			't':'96'
+		},
+		1:{
+			's':'',
+			't':''
 		}
 	},
 	'success':{
@@ -183,7 +187,7 @@ function main(){
 	sound = new LSound();
 	sound.load("BGM.mp3");
 	sound.addEventListener( LEvent.COMPLETE, function (){
-		sound.play( 0, Infinity);
+		//sound.play( 0, Infinity);
 	});
 }
 //================================================end=================
@@ -195,12 +199,11 @@ function display_char_nowA(){
 	char_layerA.addChild( now_showBitmap);
 	point_A ++;
 	if( statusA == -1){
-		var r_num = 0;
-		if( point_A < parseInt( statusA_json['start'][r_num]['s'])-2){
-			point_A = parseInt( statusA_json['start'][r_num]['s'])-2;
+		if( point_A < parseInt( statusA_json['start'][r_num_A]['s'])-2){
+			point_A = parseInt( statusA_json['start'][r_num_A]['s'])-2;
 		}
-		if(point_A > parseInt( statusA_json['start'][r_num]['t'])){
-			point_A = parseInt( statusA_json['start'][r_num]['s']);
+		if(point_A > parseInt( statusA_json['start'][r_num_A]['t'])){
+			point_A = parseInt( statusA_json['start'][r_num_A]['s']);
 		}
 	}
 
@@ -215,12 +218,11 @@ function display_char_nowA(){
 	}
 	// finger ok
 	if( statusA == 1){
-		var r_num = 0;
-		if(point_A < parseInt( statusA_json['true'][r_num]['s'])){
-			point_A = parseInt( statusA_json['true'][r_num]['s']);
+		if(point_A < parseInt( statusA_json['true'][r_num_A]['s'])){
+			point_A = parseInt( statusA_json['true'][r_num_A]['s']);
 		}
-		if(point_A > parseInt( statusA_json['true'][r_num]['t'])){
-			point_A = parseInt( statusA_json['true'][r_num]['s']);
+		if(point_A > parseInt( statusA_json['true'][r_num_A]['t'])){
+			point_A = parseInt( statusA_json['true'][r_num_A]['s']);
 		}
 		if( A_attacking == 1){
 			if( A_attacking_times == A_attacking_times_MAX)
@@ -233,18 +235,17 @@ function display_char_nowA(){
 	}
 	//forwarding attack
 	if( statusA == 2){
-		var r_num = 0;
-		if( point_A == parseInt( statusA_json['attack'][r_num]['t'])+1){
+		if( point_A == parseInt( statusA_json['attack'][r_num_A]['t'])+1){
 			A_attacking_times = 0;
 			A_attacking = 1;
 			statusA = 1;
 		}else{
-			if( point_A < parseInt( statusA_json['attack'][r_num]['s'])){
-				point_A = parseInt( statusA_json['attack'][r_num]['s']);
+			if( point_A < parseInt( statusA_json['attack'][r_num_A]['s'])){
+				point_A = parseInt( statusA_json['attack'][r_num_A]['s']);
 			}
 
-			if( point_A > parseInt( statusA_json['attack'][r_num]['t'])){
-				point_A = parseInt( statusA_json['attack'][r_num]['s']);
+			if( point_A > parseInt( statusA_json['attack'][r_num_A]['t'])){
+				point_A = parseInt( statusA_json['attack'][r_num_A]['s']);
 			}
 			char_layerA.x +=forward_width;
 		}
@@ -252,21 +253,20 @@ function display_char_nowA(){
 
 	//success
 	if( statusA == 3){					//special detail
-		var r_num = 1;
-		if(point_A < parseInt( statusA_json['success'][r_num]['s'])){
-			if( final_A_success == 1 && r_num == 1){
-				if( point_A > parseInt( statusA_json['success'][r_num]['t2']))
-					point_A = parseInt( statusA_json['success'][r_num]['t2']);
+		if(point_A < parseInt( statusA_json['success'][r_num_A]['s'])){
+			if( final_A_success == 1 && r_num_A == 1){
+				if( point_A > parseInt( statusA_json['success'][r_num_A]['t2']))
+					point_A = parseInt( statusA_json['success'][r_num_A]['t2']);
 			}else
-				point_A = parseInt( statusA_json['success'][r_num]['s']);
+				point_A = parseInt( statusA_json['success'][r_num_A]['s']);
 		}
-		if(point_A > parseInt( statusA_json['success'][r_num]['t'])){
-			if( final_A_success == 1 && r_num == 1){
-				if( point_A == parseInt( statusA_json['success'][r_num]['t'])+1)
-					point_A = parseInt( statusA_json['success'][r_num]['s2']);
+		if(point_A > parseInt( statusA_json['success'][r_num_A]['t'])){
+			if( final_A_success == 1 && r_num_A == 1){
+				if( point_A == parseInt( statusA_json['success'][r_num_A]['t'])+1)
+					point_A = parseInt( statusA_json['success'][r_num_A]['s2']);
 			}
 			else
-				point_A = parseInt( statusA_json['success'][r_num]['s']);
+				point_A = parseInt( statusA_json['success'][r_num_A]['s']);
 		}
 		final_A_success = 1;
 	}
@@ -275,6 +275,8 @@ function display_charA(){
 	point_A = 0;
 	final_A_success = 0;
 	A_attacking = 0;
+	A_start = 0;
+	r_num_A = Math.floor(Math.random()*2);
 	back_layer.addEventListener( LEvent.ENTER_FRAME, display_char_nowA);
 }
 
@@ -295,6 +297,7 @@ function display_char_nowB(){
 }
 function display_charB(){
 	point_B = 0;
+	B_start = 0;
 	back_layer.addEventListener( LEvent.ENTER_FRAME, display_char_nowB);
 }
 function game_over(){

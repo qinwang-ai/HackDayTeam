@@ -1,5 +1,5 @@
 
-
+/*
 var ws=new WebSocket("ws://localhost:8080");
 $(function(){
     ws.onopen = function(){
@@ -24,3 +24,5 @@ if(!window.WebSocket){
 
 
 
+
+*/

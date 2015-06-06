@@ -182,6 +182,7 @@ var socketServer = net.createServer(function(sock) {
             startTime = moment();
             app.io.emit('play', {});
           }
+          sock.write('You said "' + data + '"');
           return;
         }
         var user = (data.split('_'))[0];

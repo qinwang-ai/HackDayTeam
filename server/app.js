@@ -94,7 +94,7 @@ setTimeout(function () {
     startTime = moment();
     app.io.emit('play', {});
   }
-}, 10 * 1000);
+}, 20 * 1000);
 
 // var aaatmp = 0;
 // var t = setInterval(function () {
@@ -155,6 +155,15 @@ var socketServer = net.createServer(function(sock) {
 
         data = data.toString();
         if(!data) {
+          return;
+        }
+        if(data === 'start') {
+          if(!isStart && num > 0) {
+            console.log('websocket: [send] play');
+            isStart = true;
+            startTime = moment();
+            app.io.emit('play', {});
+          }
           return;
         }
         var user = (data.split('_'))[0];

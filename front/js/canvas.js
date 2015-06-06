@@ -90,19 +90,33 @@ function load_char_imagesB( pre, imgs_count, load_char_C){
 		loadingLayer.setProgress(progress)},load_char_C);
 }
 
+roll_Array = new Array();
 function roll_finger(){
-	if( rolling_put == 1){
-		var rolling_Bitmap = new LBitmap( showList_back[ 1+rolling_num]);
-		back_layer.addChild( rolling_Bitmap);
+	if( rolling_put == rolling_speed && rolling_num+2 <= showList_back.length){	//phore
+		var rolling_Bitmap = new LBitmap( showList_back[ 1 + rolling_num]);
+		roll_layer.addChild( rolling_Bitmap);
+		rolling_put = 0;
+		roll_Array.push( rolling_Bitmap);
+		rolling_num ++;		//finger squence
 	}
-	roll_layer.x+=10;
+	//roll_Array[0].x-=10;
+	if( roll_Array.length>0 ){
+		for( var x in roll_Array){
+			roll_Array[x].x -= 10;
+		}
+		if( roll_Array[0].x < -500){
+			roll_layer.removeChild( roll_Array[0]);
+			roll_Array.shift();
+		}
+	}
+	rolling_put ++;			//speedi
 }
 
+// include rolling
 function load_back_complete( result){
 	showList_back.push( new LBitmapData( result["back"]));
 	showList_back.push( new LBitmapData( result["flow"]));
 	for(var  i = 0;i<=9;i++){
-		console.log( i.toString());
 		showList_back.push( new LBitmapData( result[ "01_time_"+i.toString() ]));
 	}
 	//display background
@@ -116,13 +130,16 @@ function load_back_complete( result){
 
 	flow_layer.x = 120;
 	flow_layer.y = 320;
-	//rolling ---------------start
+	//Rolling ---------------start
 	rolling_num = 1;
-	rolling_put = 1;
+	rolling_speed = 2;
+	rolling_put = rolling_speed;
 	roll_layer = new LSprite();
 	back_layer.addChild( roll_layer);
+	roll_layer.x = 800;
+	roll_layer.y = 330;
 	back_layer.addEventListener( LEvent.ENTER_FRAME, roll_finger);
-	//roling ---------------
+	//Roling ---------------end
 	load_char_imagesA( "Asu", imgs_countA, load_char_completeA);
 }
 function load_char_completeA(result){
@@ -358,6 +375,9 @@ function display_char_nowA(){
 			point_A = parseInt( statusA_json['true'][r_num_A]['s']);
 		}
 		if(point_A > parseInt( statusA_json['true'][r_num_A]['t'])){
+			if( A_attacking != 1 && point_A == parseInt( statusA_json['true'][r_num_A]['t'])+1){
+				statusA = 0;
+			}
 			point_A = parseInt( statusA_json['true'][r_num_A]['s']);
 		}
 		// attack done
@@ -471,6 +491,9 @@ function display_char_nowB(){
 			point_B = parseInt( statusB_json['true'][r_num_B]['s']);
 		}
 		if(point_B > parseInt( statusB_json['true'][r_num_B]['t'])){
+			if( B_attacking != 1 && point_B == parseInt( statusB_json['true'][r_num_B]['t'])+1){
+				statusB = 0;
+			}
 			point_B = parseInt( statusB_json['true'][r_num_B]['s']);
 		}
 		if( B_attacking == 1){

@@ -31,15 +31,18 @@
 
   (这是为了，无论在哪个web页面点击开始，所有web页面都同时开始游戏)
 
-  后台注册事件：play 无参数
+
   前台注册事件：play 无参数
 
 
 5. 后台会在每一个需要做的手势的时间 前后100ms 以内用websocket发送数据给前台，告诉前台A或B玩家是否做对这个手势。
 
   前台注册事件： result
-  参数： io.sockets.emit('result', 'A', 0, true) //代表 A玩家第0编号的手势成功（true）做出
-        io.sockets.emit('result', 'B', 3, false) ////代表 B玩家第3编号的手势失败（false）
+  参数： io.sockets.emit('result', {
+    name: ''A',
+    index: 0,
+    flag: true
+  }); //代表 A玩家第0编号的手势成功（true）做出
 
 6. 后台计算AB玩家的手势是否通过，每连续通过10个手势就像对方发一个攻击特效，对方掉一点血。
 

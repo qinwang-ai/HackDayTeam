@@ -25,4 +25,7 @@ autod: install
 		-f "~"
 	@$(MAKE) install
 
-.PHONY: start install clean autod
+cp:
+	@cp -r ../front static
+
+.PHONY: start install clean autod cp

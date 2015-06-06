@@ -5,6 +5,7 @@ var middlewares = require('koa-middlewares');
 var routes = require('./routes');
 var config = require('./config');
 var path = require('path');
+var leap = require('./leap');
 
 var app = koa();
 app.keys = config.keys;
@@ -42,6 +43,8 @@ routes(app);
 app.listen(config.port);
 console.log('The server is listening port %s.', config.port);
 
+// websocket
+
 app.io.use(function* (next) {
   console.log('New audience connects.');
   yield* next;
@@ -54,3 +57,5 @@ app.io.route('play', function* (next) {
   this.broadcast.emit('play');
 });
 
+// leap socket
+leap.l

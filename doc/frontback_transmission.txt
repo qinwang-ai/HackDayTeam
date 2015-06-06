@@ -39,7 +39,7 @@
 
   前台注册事件： result
   参数： io.sockets.emit('result', {
-    name: ''A',
+    name: 'A',
     index: 0,
     flag: true
   }); //代表 A玩家第0编号的手势成功（true）做出

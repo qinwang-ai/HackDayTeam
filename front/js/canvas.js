@@ -40,14 +40,10 @@ function display_global_now(){
 		white_layer.addEventListener( LEvent.ENTER_FRAME, display_white_now);
 	}else{
 		if( back_layer.visible == false && start_game == 1){
-			sound = new LSound();
-			sound.load("BGM.mp3");
-			sound.addEventListener( LEvent.COMPLETE, function (){
-				sound.play( 0, Infinity);
-			});
 			back_layer.visible = true;
 			white_layer.removeAllChild();
 			white_layer.removeEventListener( LEvent.ENTER_FRAME, display_white_now);
+			sound.play( 0, Infinity);
 		}
 	}
 }
@@ -96,28 +92,52 @@ function load_char_imagesB( pre, imgs_count, load_char_C){
 		loadingLayer.setProgress(progress)},load_char_C);
 }
 
+//==============================
+function sms (str) {
+  var min = str.split(':')[0];
+  var sed = str.split(':')[1];
+  var ans =(min * 60 + sed) * 1000;
+  return ans;
+}
 roll_Array = new Array();
+flag_again = new Array();
 function roll_finger(){
-	if( rolling_put == rolling_speed && rolling_num< showList_finger.length){	//phore
-		var rolling_Bitmap = new LBitmap( showList_finger[ rolling_num]);
-		roll_layer.addChild( rolling_Bitmap);
-		rolling_put = 0;
-		roll_Array.push( rolling_Bitmap);
-		rolling_num ++;		//finger squence
+	var phore_T = 10;
+	var pre_phore_T = 100;
+	sound_current = Math.floor(sound.data.currentTime*1000);
+	// if( rolling_put == rolling_speed && rolling_num< showList_finger.length){	//phore
+	// 	rolling_put = 0;
+	// 	rolling_num ++;		//finger squence
+	// }
+	for( var x in gesture_json){
+		var x_t = sms( gesture_json[x].time)-13*1000;
+		if ( sound_current < x_t-phore_T && sound_current>x_t - pre_phore_T&& flag_again[ gesture_json[ x].index]===undefined){
+			var rolling_Bitmap = new LBitmap( showList_finger[ gesture_json[ x].type]);
+			roll_layer.addChild( rolling_Bitmap);
+	 		roll_Array.push( rolling_Bitmap);
+			flag_again[ gesture_json[ x].index] = true;
+			break;
+		}
+		//console.log( gesture_json[x].time);
 	}
-	//roll_Array[0].x-=10;
 	if( roll_Array.length>0 ){
 		for( var x in roll_Array){
-			roll_Array[x].x -= 10;
+			roll_Array[x].x -= 5;
 		}
 		if( roll_Array[0].x < -500){
 			roll_layer.removeChild( roll_Array[0]);
 			roll_Array.shift();
+			console.log( (new Date()).getTime());
 		}
 	}
-	rolling_put ++;			//speedi
+//	rolling_put ++;			//speedi
 }
 
+var blood_Bitmap_nowAX = 107;
+var blood_Bitmap_nowAY = 86;
+
+var blood_Bitmap_nowBX = 560;
+var blood_Bitmap_nowBY = 86;
 function building_blood(){
 	// blood
 	blood_layer = new LSprite();
@@ -128,14 +148,14 @@ function building_blood(){
 	blood_layer.y = 70;
 //A
 	blood_Bitmap_nowA = new LBitmap( showList_blood[ blood_A]);
-	blood_Bitmap_nowA.x = 107;
-	blood_Bitmap_nowA.y = 85;
+	blood_Bitmap_nowA.x = blood_Bitmap_nowAX;
+	blood_Bitmap_nowA.y = blood_Bitmap_nowAY;
+	blood_Bitmap_nowA.scaleX = -1;
 	back_layer.addChild( blood_Bitmap_nowA);
 //B
 	blood_Bitmap_nowB = new LBitmap( showList_blood[ blood_B]);
-	blood_Bitmap_nowB.x = 560;
-	blood_Bitmap_nowB.y = 85;
-	blood_Bitmap_nowB.scaleX = -1;
+	blood_Bitmap_nowB.x = blood_Bitmap_nowBX;
+	blood_Bitmap_nowB.y = blood_Bitmap_nowBY;
 //	blood_Bitmap_nowB.scaleY = -1;
 	back_layer.addChild( blood_Bitmap_nowB);
 	//blood ----------------end
@@ -166,15 +186,25 @@ function load_back_complete( result){
 	// flow-------------end
 	building_blood();
 
-	//Rolling ---------------start
-	rolling_num = 1;
-	rolling_speed = 2;
-	rolling_put = rolling_speed;
-	roll_layer = new LSprite();
-	back_layer.addChild( roll_layer);
-	roll_layer.x = 800;
-	roll_layer.y = 330;
-	back_layer.addEventListener( LEvent.ENTER_FRAME, roll_finger);
+	// sound mp3
+	sound = new LSound();
+	sound.load("BGM.mp3");
+	$.getJSON("gesture.json",function(data){
+			gesture_json = data;
+	})
+	sound.addEventListener( LEvent.COMPLETE, function (){
+
+		//Rolling ---------------start
+		rolling_num = 1;
+		rolling_speed = 2;
+		rolling_put = rolling_speed;
+		roll_layer = new LSprite();
+		back_layer.addChild( roll_layer);
+		roll_layer.x = 800;
+		roll_layer.y = 330;
+				//back_layer.addEventListener( LEvent.ENTER_FRAME, roll_finger);
+		Roll_INTERVAL = setInterval( "roll_finger()", 50);
+	});
 	//Roling ---------------end
 	load_char_imagesA( "Asu", imgs_countA, load_char_completeA);
 }
@@ -621,9 +651,8 @@ function sub_blood_B(){
 	back_layer.removeChild( blood_Bitmap_nowB);
 	blood_Bitmap_nowB = new LBitmap( showList_blood[ blood_B]);
 	back_layer.addChild( blood_Bitmap_nowB);
-	blood_Bitmap_nowB.x = 560;
-	blood_Bitmap_nowB.y = 85;
-	blood_Bitmap_nowB.scaleX = -1;
+	blood_Bitmap_nowB.x = blood_Bitmap_nowBX;
+	blood_Bitmap_nowB.y = blood_Bitmap_nowBY;
 }
 
 function sub_blood_A(){
@@ -631,6 +660,7 @@ function sub_blood_A(){
 	back_layer.removeChild( blood_Bitmap_nowA);
 	blood_Bitmap_nowA = new LBitmap( showList_blood[ blood_A]);
 	back_layer.addChild( blood_Bitmap_nowA);
-	blood_Bitmap_nowA.x = 107;
-	blood_Bitmap_nowA.y = 85;
+	blood_Bitmap_nowA.x = blood_Bitmap_nowAX;
+	blood_Bitmap_nowA.y = blood_Bitmap_nowAY;
+	blood_Bitmap_nowA.scaleX = -1;
 }

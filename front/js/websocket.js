@@ -1,4 +1,3 @@
-
 /*
 var ws=new WebSocket("ws://localhost:8080");
 $(function(){
@@ -21,8 +20,20 @@ if(!window.WebSocket && window.MozWebSocket)
 if(!window.WebSocket){
     alert("此浏览器不支持WebSocket");
 }
-
-
-
-
 */
+
+  var socket = io('http://localhost');
+  socket.on('', function (data) {
+    console.log(data);
+    socket.emit('my other event', { my: 'data' });
+  });
+
+  socket.on('', function (data) {
+    console.log(data);
+    socket.emit('my other event', { my: 'data' });
+  });
+  
+  socket.on('', function (data) {
+    console.log(data);
+    socket.emit('my other event', { my: 'data' });
+  });

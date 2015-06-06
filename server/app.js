@@ -81,6 +81,7 @@ app.io.use(function* (next) {
   console.log('Some audience disconnects.');
   if(num === 0) {
     isStart = false;
+    console.log('Game end!');
     reset();
   }
 });
@@ -120,14 +121,14 @@ var isOk = function (user, types) {
       continue;
     }
     // console.log(222);
-    var tmpTime1 = moment(startTime).add(moment.duration('00:' + gestureRaw[i].time)).add(1, 's');
-    var tmpTime2 = moment(startTime).add(moment.duration('00:' + gestureRaw[i].time)).subtract(1, 's');
+    var tmpTime1 = moment(startTime).add(moment.duration('00:' + gestureRaw[i].time)).subtract(1, 's');
+    var tmpTime2 = moment(startTime).add(moment.duration('00:' + gestureRaw[i].time)).add(1, 's');
     var now = moment();
-    // debug(tmpTime1.format('hh:mm:ss'), tmpTime2.format('hh:mm:ss'));
+    // debug("%s, %s, %s", tmpTime1.format('hh:mm:ss'), now.format('hh:mm:ss'), tmpTime2.format('hh:mm:ss'));
     if(tmpTime1 <= now && now <= tmpTime2) {
       // console.log(333);
       for(var j = 0; j < types.length; j++) {
-        if(types[j] === elem.type) {
+        if(types[j] === elem.type.toString()) {
           return i;
         }
       }
@@ -206,7 +207,7 @@ var socketServer = net.createServer(function(sock) {
 
         var index = isOk(user, types);
 
-        console.log(index);
+        // console.log(index);
 
         if(index) {
           gesture[user][index] = true;
@@ -226,6 +227,7 @@ var socketServer = net.createServer(function(sock) {
                 console.log('websocket: [send] attack 1');
                 if(!hp.B) {
                   app.io.emit('stop', 'A');
+                  console.log('Game end!');
                   reset();
                 }
               } else if(combo.A < 10 && combo.B >= 10) {
@@ -234,6 +236,7 @@ var socketServer = net.createServer(function(sock) {
                 console.log('websocket: [send] attack 2');
                 if(!hp.A) {
                   app.io.emit('stop', 'B');
+                  console.log('Game end!');
                   reset();
                 }
               } else if(combo.A >=10 && combo.B >= 10) {

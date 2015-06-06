@@ -6,6 +6,7 @@
 		statusB,statusA,start_game
 	json:
 		statusB_json,statusA_json,preStart_json
+	3: last success
 */
 
 
@@ -13,9 +14,14 @@ function load_back_images( imgs_count, load_char_C){
 	var json_str = "([";
 	json_str += '{"name":"'+'back'+'","path":'+'"images/back.jpg"},';
 	json_str += '{"name":"'+'flow'+'","path":'+'"images/flow.png"},';
+	json_str += '{"name":"'+'blood'+'","path":'+'"images/blood.png"},';
 	for(var  i = 0;i<=9;i++){
 		json_str += '{"name":"'+'01_time_'+i.toString()+'","path":'+'"images/01_time_'+i.toString()+'.png"},';
 	}
+	for (var i = 1; i <= 9; i++) {
+		json_str += '{"name":"'+'b0'+i.toString()+'","path":'+'"images/b0'+i.toString()+'.png"},';
+	}
+	json_str += '{"name":'+'"b10","path":'+'"images/b10.png"},';
 	json_str+='])';
 	var imgs_DATA = eval( json_str);
 	loadingLayer = new LoadingSample3();
@@ -92,8 +98,8 @@ function load_char_imagesB( pre, imgs_count, load_char_C){
 
 roll_Array = new Array();
 function roll_finger(){
-	if( rolling_put == rolling_speed && rolling_num+2 <= showList_back.length){	//phore
-		var rolling_Bitmap = new LBitmap( showList_back[ 1 + rolling_num]);
+	if( rolling_put == rolling_speed && rolling_num< showList_finger.length){	//phore
+		var rolling_Bitmap = new LBitmap( showList_finger[ rolling_num]);
 		roll_layer.addChild( rolling_Bitmap);
 		rolling_put = 0;
 		roll_Array.push( rolling_Bitmap);
@@ -112,12 +118,39 @@ function roll_finger(){
 	rolling_put ++;			//speedi
 }
 
-// include rolling
+function building_blood(){
+	// blood
+	blood_layer = new LSprite();
+	blood_Bitmap = new LBitmap( showList_back[2]);
+	blood_layer.addChild( blood_Bitmap);
+	back_layer.addChild( blood_layer);
+	blood_layer.x = 90;
+	blood_layer.y = 70;
+//A
+	blood_Bitmap_nowA = new LBitmap( showList_blood[ blood_A]);
+	blood_Bitmap_nowA.x = 107;
+	blood_Bitmap_nowA.y = 85;
+	back_layer.addChild( blood_Bitmap_nowA);
+//B
+	blood_Bitmap_nowB = new LBitmap( showList_blood[ blood_B]);
+	blood_Bitmap_nowB.x = 560;
+	blood_Bitmap_nowB.y = 85;
+	blood_Bitmap_nowB.scaleX = -1;
+//	blood_Bitmap_nowB.scaleY = -1;
+	back_layer.addChild( blood_Bitmap_nowB);
+	//blood ----------------end
+}
+// include rolling-----------------------------------------------------BACK IMAGE BUILD
 function load_back_complete( result){
 	showList_back.push( new LBitmapData( result["back"]));
 	showList_back.push( new LBitmapData( result["flow"]));
+	showList_back.push( new LBitmapData( result["blood"]));
+	for (var i = 1; i <= 9; i++) {
+		showList_blood.push( new LBitmapData ( result[ "b0" + i.toString()]));
+	}
+	showList_blood.push( new LBitmapData ( result[ "b10"]));
 	for(var  i = 0;i<=9;i++){
-		showList_back.push( new LBitmapData( result[ "01_time_"+i.toString() ]));
+		showList_finger.push( new LBitmapData( result[ "01_time_"+i.toString() ]));
 	}
 	//display background
 	back_Bitmap = new LBitmap( showList_back[0]);
@@ -130,6 +163,9 @@ function load_back_complete( result){
 
 	flow_layer.x = 120;
 	flow_layer.y = 320;
+	// flow-------------end
+	building_blood();
+
 	//Rolling ---------------start
 	rolling_num = 1;
 	rolling_speed = 2;
@@ -159,6 +195,8 @@ function load_char_completeB(result){
 showListA = new Array();
 showListB = new Array();
 showList_back = new Array();
+showList_blood = new Array();
+showList_finger = new Array();
 imglistA = {};
 imglistB = {};
 forward_width = 40;					//forward attack width
@@ -171,6 +209,8 @@ A_layer_margin_Top = 175;
 B_layer_margin_Top = 150;
 A_attacking_times_MAX = 30;
 B_attacking_times_MAX = 30;
+blood_A = 9;
+blood_B = 9;
 imgs_back_count = 2;
 mark_collide = 0;					//collide mark
 statusA = -1;		//-1:start 0:prepare 1:true 2:attack 3:success 4:failure
@@ -398,6 +438,7 @@ function display_char_nowA(){
 			A_attacking = 1;
 			statusA = 1;
 			statusB = 4;
+			sub_blood_B();
 			r_num_B = Math.floor(Math.random()*2);
 		}else{
 			if( point_A < parseInt( statusA_json['attack'][r_num_A]['s'])){
@@ -428,9 +469,10 @@ function display_char_nowA(){
 			else
 				point_A = parseInt( statusA_json['success'][r_num_A]['s']);
 		}
-		final_A_success = 1;
+		back_layer.removeChild( blood_Bitmap_nowB);
 		statusB = 4;
-		r_num_B = 0;
+		final_A_success = 1;
+		r_num_B = 0;		//SUCCESS_ POSITION
 	}
 	//failure
 	if( statusA == 4){					//special detail
@@ -444,9 +486,10 @@ function display_char_nowA(){
 				mark_collide = 0;
 			}
 
-			if( point_A == parseInt( statusA_json[ 'failure'][ r_num_A]['t']) + 1 && final_B_success == 1)
+			if( point_A == parseInt( statusA_json[ 'failure'][ r_num_A]['t']) + 1 && final_B_success == 1){
+				sound.close();
 				point_A = parseInt( statusA_json[ 'failure'][r_num_A][ 't']);
-			else
+			}else
 				point_A = parseInt( statusA_json[ 'failure'][r_num_A][ 's']);
 		}
 	}
@@ -513,6 +556,7 @@ function display_char_nowB(){
 			B_attacking = 1;
 			statusB = 1;
 			statusA = 4;
+			sub_blood_A();
 			r_num_A = Math.floor(Math.random()*2);
 		}else{
 			if( point_B < parseInt( statusB_json['attack'][r_num_B]['s'])){
@@ -537,6 +581,7 @@ function display_char_nowB(){
 			else
 				point_B = parseInt( statusB_json['success'][r_num_B]['s']);
 		}
+		back_layer.removeChild( blood_Bitmap_nowA);
 		statusA = 4;
 		final_B_success = 1;
 		r_num_A = 1;
@@ -570,4 +615,22 @@ function display_charB(){
 }
 function game_over(){
 
+}
+function sub_blood_B(){
+	blood_B --;
+	back_layer.removeChild( blood_Bitmap_nowB);
+	blood_Bitmap_nowB = new LBitmap( showList_blood[ blood_B]);
+	back_layer.addChild( blood_Bitmap_nowB);
+	blood_Bitmap_nowB.x = 560;
+	blood_Bitmap_nowB.y = 85;
+	blood_Bitmap_nowB.scaleX = -1;
+}
+
+function sub_blood_A(){
+	blood_A --;
+	back_layer.removeChild( blood_Bitmap_nowA);
+	blood_Bitmap_nowA = new LBitmap( showList_blood[ blood_A]);
+	back_layer.addChild( blood_Bitmap_nowA);
+	blood_Bitmap_nowA.x = 107;
+	blood_Bitmap_nowA.y = 85;
 }

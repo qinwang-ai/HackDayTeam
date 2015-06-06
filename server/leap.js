@@ -15,6 +15,10 @@ var server = net.createServer(function(sock) {
         sock.write('You said "' + data + '"');
     });
 
+    sock.on('error', function (data) {
+      console.log('ERROR');
+    });
+
     // 为这个socket实例添加一个"close"事件处理函数
     sock.on('close', function(data) {
         console.log('CLOSED: ' +

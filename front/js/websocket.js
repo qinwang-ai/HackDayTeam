@@ -22,23 +22,49 @@ if(!window.WebSocket){
 }
 
 */
-  var socket = io('127.0.0.1');
-  socket.on('play', function (data) {
-     console.log(data);
-    sockets.emit('result', 'A', 0, true);
+  var socket = io();
+  socket.on('connection', function (data){
+      console.log('connection success');
+  });
+  socket.on('play', function (data){
+      console.log('[play]', data);
+      start_game = 1;
   });
 
-  socket.on('result', function (data) {
-    console.log(data);
-    socket.emit('my other event', { my: 'data' });
+  socket.on('result', function (data){
+     console.log('[result]', data);
+     if( data[ 'name'] == 'A'){
+         if( data[ 'flag']){
+            statusA = 1;
+        }else{
+            statusA = 0;
+        }
+     }
+     if( data[ 'name'] == 'B'){
+         if( data[ 'flag']){
+            statusB = 1;
+        }else{
+            statusB = 0;
+        }
+     }
   });
 
   socket.on('attack', function (data) {
-    console.log(data);
-    socket.emit('my other event', { my: 'data' });
+      console.log('[attack]', data);
+      if(data == 1){
+          statusA = 2;
+      }
+      if(data == 2){
+          statusB = 2;
+      }
   });
 
   socket.on('stop', function (data) {
-    console.log(data);
-    socket.emit('my other event', { my: 'data' });
+      console.log('[stop]', data);
+      if( data == 'A'){
+          statusA = 3;
+      }
+      if( data == 'B'){
+          statusB = 3;
+      }
   });

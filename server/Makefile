@@ -4,7 +4,7 @@ REPORTER = spec
 TIMEOUT = 3000
 MOCHA_OPTS =
 
-start:
+start: cp
 	@node --harmony ./app.js
 
 install:
@@ -26,6 +26,6 @@ autod: install
 	@$(MAKE) install
 
 cp:
-	@cp -r ../front static
+	@cp -r ../front/* ./static
 
 .PHONY: start install clean autod cp

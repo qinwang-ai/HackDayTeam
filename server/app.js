@@ -33,7 +33,10 @@ app.use(function* (next) {
 app.use(middlewares.staticCache({
   dir: path.join(__dirname, 'static'),
   buffer: true,
-  gzip: true
+  gzip: true,
+  alias: {
+    '/': '/index.html'
+  }
 }));
 
 // routes
@@ -43,40 +46,40 @@ routes(app);
 app.listen(config.webport);
 console.log('The server is listening port %s.', config.webport);
 
-// websocket
-app.io.use(function* (next) {
-  console.log('New audience connects.');
+var num = 0;
+var isStart = false;
 
-  // web socket test
-  setTimeout(function () {
+app.io.use(function* (next) {
+  num++;
+  console.log('New audience connects.');
+  console.log('%s audiences are in the game room.', num);
+  yield* next;
+  num--;
+  console.log('Some audience disconnects.');
+  if(num === 0) {}
+});
+
+
+// websocket
+setTimeout(function () {
+  if(!isStart && num > 0) {
     console.log('websocket: [send] play');
-    this.broadcast.emit('play');
-  }, 1000);
-  var tmp = 0;
-  var t = setInterval(function () {
-    console.log('websocket: [send] result')
-    this.broadcast.emit('result', {
+    isStart = true;
+    app.io.emit('play', {});
+  }
+}, 20 * 1000);
+
+var tmp = 0;
+var t = setInterval(function () {
+  if(isStart && num > 0) {
+    console.log('websocket: [send] result');
+    app.io.emit('result', {
       name:  'A',
       index: tmp++,
       flag: true
     });
-  }, 5000);
-
-  setTimeout(function () {
-    clearInterval(t);
-    this.broadcast.emit('stop', 'A');
-  }, 30 * 1000);
-
-  yield* next;
-  console.log('Some audience disconnects.');
-});
-
-// 游戏开始，所有连接者同时开始
-app.io.route('play', function* (next) {
-  isPlay = true;
-  this.broadcast.emit('play');
-});
-
+  }
+}, 3000);
 
 // leap socket
 leap.listen(config.socketport, '25.0.0.116');

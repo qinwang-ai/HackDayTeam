@@ -5,7 +5,7 @@ TIMEOUT = 3000
 MOCHA_OPTS =
 
 start: cp
-	@node --harmony ./app.js
+	@DEBUG=app node --harmony ./app.js
 
 install:
 	@npm install \

@@ -5,15 +5,29 @@ var middlewares = require('koa-middlewares');
 var routes = require('./routes');
 var config = require('./config');
 var path = require('path');
-var leap = require('./leap');
 var net = require('net');
-var gestureRaw = require('../static/gesture.json');
+var gestureRaw = require('./static/gesture.json');
 var moment = require('moment');
 
-var gesture = {
-  A: [],
-  B: []
+var gesture, combo, hp, startI;
+
+var reset = function (argument) {
+  startI = 0;
+  gesture = {
+    A: [],
+    B: []
+  };
+  combo = {
+    A: 0,
+    B: 0
+  };
+  hp = {
+    A: 10,
+    B: 10
+  };
 };
+
+reset();
 
 var app = koa();
 app.keys = config.keys;
@@ -27,9 +41,8 @@ app.use(middlewares.cookieSession(app));
 app.use(middlewares.bodyparser());
 
 // 如果游戏已经开始，则禁止进入游戏
-var isPlay = false;
 app.use(function* (next) {
-  if(isPlay) {
+  if(isStart) {
     this.body = '游戏已开始';
     this.type = 'html';
   } else {
@@ -65,7 +78,10 @@ app.io.use(function* (next) {
   yield* next;
   num--;
   console.log('Some audience disconnects.');
-  if(num === 0) {}
+  if(num === 0) {
+    isStart = false;
+    reset();
+  }
 });
 
 
@@ -79,17 +95,17 @@ setTimeout(function () {
   }
 }, 10 * 1000);
 
-var tmp = 0;
-var t = setInterval(function () {
-  if(isStart && num > 0) {
-    console.log('websocket: [send] result');
-    app.io.emit('result', {
-      name:  'A',
-      index: tmp++,
-      flag: true
-    });
-  }
-}, 3000);
+// var aaatmp = 0;
+// var t = setInterval(function () {
+//   if(isStart && num > 0) {
+//     console.log('websocket: [send] result');
+//     app.io.emit('result', {
+//       name:  'A',
+//       index: aaatmp++,
+//       flag: true
+//     });
+//   }
+// }, 3000);
 
 // leap socket
 var isOk = function (index) {
@@ -97,7 +113,6 @@ var isOk = function (index) {
   return true;
 };
 //返回超时未检测错误 每1秒检测一次
-var startI = 0;
 setTimeout(function () {
   for(var i = startI; i < gestureRaw.length; i++) {
     var deadline = moment(startTime).add(moment.duration(gestureRaw[i].time)).add(1, 'm');
@@ -109,6 +124,7 @@ setTimeout(function () {
           index: i,
           flag: false
         });
+        combo.A = 0;
       }
       if(!gesture.B[i] && moment() > deadline) {
         gesture.B[i] = true;
@@ -117,6 +133,7 @@ setTimeout(function () {
           index: i,
           flag: false
         });
+        combo.B = 0;
       }
     } else {
       startI = i;
@@ -142,6 +159,29 @@ var server = net.createServer(function(sock) {
             index: index,
             flag: true
           });
+          combo[user]++;
+          //触发攻击
+          if(combo[user] === config.comboNum) {
+            setTimeout(function () {
+              if(combo.A >= 10 && combo.B < 10) {
+                hp.B--;
+                app.io.emit('attack', 1);
+                if(!hp.B) {
+                  app.io.emit('stop', 'A');
+                  reset();
+                }
+              } else if(combo.A < 10 && combo.B >= 10) {
+                hp.A--;
+                app.io.emit('attack', 2);
+                if(!hp.A) {
+                  app.io.emit('stop', 'B');
+                  reset();
+                }
+              } else if(combo.A >=10 && combo.B >= 10) {
+                app.io.emit('attack', 0);
+              }
+            }, 1000);
+          }
         }
 
         // 回发该数据，客户端将收到来自服务端的数据

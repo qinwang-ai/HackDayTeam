@@ -149,6 +149,12 @@ var socketServer = net.createServer(function(sock) {
     // 我们获得一个连接 - 该连接自动关联一个socket对象
     console.log('CONNECTED: ' +
         sock.remoteAddress + ':' + sock.remotePort);
+
+    sock.on('error', function(err){
+    // Handle the connection error.
+      sock.close();
+    });
+
     // 为这个socket实例添加一个"data"事件处理函数
     sock.on('data', function(data) {
         console.log('DATA ' + sock.remoteAddress + ': ' + data);
@@ -207,9 +213,6 @@ var socketServer = net.createServer(function(sock) {
         // 回发该数据，客户端将收到来自服务端的数据
         sock.write('You said "' + data + '"');
     });
-    sock.on('error', function (data) {
-      console.log('ERROR');
-    });
     // 为这个socket实例添加一个"close"事件处理函数
     sock.on('close', function(data) {
         console.log('CLOSED: ' +
@@ -218,3 +221,8 @@ var socketServer = net.createServer(function(sock) {
 });
 socketServer.listen(config.socketport, '25.0.0.116');
 console.log('The leap socket server is listening port %s.', config.socketport);
+
+process.on('uncaughtException', function(err) {
+    console.log('Caught exception: ' + err);
+    console.log(err.stack);
+});

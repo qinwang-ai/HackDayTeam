@@ -105,12 +105,8 @@ function roll_finger(){
 	var phore_T = 10;
 	var pre_phore_T = 100;
 	sound_current = Math.floor(sound.data.currentTime*1000);
-	// if( rolling_put == rolling_speed && rolling_num< showList_finger.length){	//phore
-	// 	rolling_put = 0;
-	// 	rolling_num ++;		//finger squence
-	// }
 	for( var x in gesture_json){
-		var x_t = sms( gesture_json[x].time)-13*1000;
+		var x_t = sms( gesture_json[x].time);
 		if ( sound_current < x_t-phore_T && sound_current>x_t - pre_phore_T&& flag_again[ gesture_json[ x].index]===undefined){
 			var rolling_Bitmap = new LBitmap( showList_finger[ gesture_json[ x].type]);
 			roll_layer.addChild( rolling_Bitmap);
@@ -130,7 +126,6 @@ function roll_finger(){
 			console.log( (new Date()).getTime());
 		}
 	}
-//	rolling_put ++;			//speedi
 }
 
 var blood_Bitmap_nowAX = 107;
@@ -191,7 +186,7 @@ function load_back_complete( result){
 	sound.load("BGM.mp3");
 	$.getJSON("gesture.json",function(data){
 			gesture_json = data;
-	})
+	});
 	sound.addEventListener( LEvent.COMPLETE, function (){
 
 		//Rolling ---------------start
@@ -615,6 +610,8 @@ function display_char_nowB(){
 		statusA = 4;
 		final_B_success = 1;
 		r_num_A = 1;
+		sound_ok = new LSound();
+		sound_ok.load( "ko.mp3");
 	}
 	//failure
 	if( statusB == 4){					//special detail

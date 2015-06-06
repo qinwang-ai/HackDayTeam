@@ -21,7 +21,8 @@ if(!window.WebSocket){
     alert("此浏览器不支持WebSocket");
 }
 
-  var socket = io('http://hackday.com/');
+*/
+  var socket = io('127.0.0.1');
   socket.on('play', function (data) {
      console.log(data);
     sockets.emit('result', 'A', 0, true);
@@ -41,5 +42,3 @@ if(!window.WebSocket){
     console.log(data);
     socket.emit('my other event', { my: 'data' });
   });
-
-*/

@@ -15,6 +15,9 @@ function load_back_images( imgs_count, load_char_C){
 	json_str += '{"name":"'+'back'+'","path":'+'"images/back.jpg"},';
 	json_str += '{"name":"'+'flow'+'","path":'+'"images/flow.png"},';
 	json_str += '{"name":"'+'blood'+'","path":'+'"images/blood.png"},';
+	json_str += '{"name":"'+'ko'+'","path":'+'"images/KO.png"},';
+	json_str += '{"name":"'+'hit'+'","path":'+'"images/hit.png"},';
+	json_str += '{"name":"'+'miss'+'","path":'+'"images/miss.png"},';
 	for(var  i = 0;i<=9;i++){
 		json_str += '{"name":"'+'01_time_'+i.toString()+'","path":'+'"images/01_time_'+i.toString()+'.png"},';
 	}
@@ -160,6 +163,9 @@ function load_back_complete( result){
 	showList_back.push( new LBitmapData( result["back"]));
 	showList_back.push( new LBitmapData( result["flow"]));
 	showList_back.push( new LBitmapData( result["blood"]));
+	showList_back.push( new LBitmapData( result["ko"]));		//3
+	showList_back.push( new LBitmapData( result["hit"]));//4
+	showList_back.push( new LBitmapData( result["miss"]));//5
 	for (var i = 1; i <= 9; i++) {
 		showList_blood.push( new LBitmapData ( result[ "b0" + i.toString()]));
 	}
@@ -179,6 +185,46 @@ function load_back_complete( result){
 	flow_layer.x = 120;
 	flow_layer.y = 320;
 	// flow-------------end
+	//ko hit miss
+	ko_Bitmap = new LBitmap( showList_back[3]);
+	back_layer.addChild( ko_Bitmap);
+	ko_Bitmap.scaleX = 0.7;
+	ko_Bitmap.scaleY = 0.7;
+	ko_Bitmap.visible = false;
+
+	hit_Bitmap_A = new LBitmap( showList_back[4]);
+	back_layer.addChild( hit_Bitmap_A);
+	hit_Bitmap_A.scaleX = 0.7;
+	hit_Bitmap_A.scaleY = 0.7;
+	hit_Bitmap_A.x = 240;
+	hit_Bitmap_A.y = 200;
+	hit_Bitmap_A.visible = false;
+
+	miss_Bitmap_A = new LBitmap( showList_back[5]);
+	back_layer.addChild( miss_Bitmap_A);
+	miss_Bitmap_A.scaleX = 0.7;
+	miss_Bitmap_A.scaleY = 0.7;
+	miss_Bitmap_A.x = 240;
+	miss_Bitmap_A.y = 200;
+	miss_Bitmap_A.visible = false;
+
+	hit_Bitmap_B = new LBitmap( showList_back[4]);
+	back_layer.addChild( hit_Bitmap_B);
+	hit_Bitmap_B.scaleX = 0.7;
+	hit_Bitmap_B.scaleY = 0.7;
+	hit_Bitmap_B.x = 700;
+	hit_Bitmap_B.y = 200;
+	hit_Bitmap_B.visible = false;
+
+	miss_Bitmap_B = new LBitmap( showList_back[5]);
+	back_layer.addChild( miss_Bitmap_B);
+	miss_Bitmap_B.scaleX = 0.7;
+	miss_Bitmap_B.scaleY = 0.7;
+	miss_Bitmap_B.x = 700;
+	miss_Bitmap_B.y = 200;
+	miss_Bitmap_B.visible = false;
+
+	//ko -- end
 	building_blood();
 
 	// sound mp3
@@ -503,6 +549,7 @@ function display_char_nowA(){
 		r_num_B = 0;		//SUCCESS_ POSITION
 		if( ko_music != 1){
 			sound.close();
+			ko_Bitmap.visible = true;
 			sound_ok.play();
 			ko_music = 1;
 		}
@@ -619,6 +666,7 @@ function display_char_nowB(){
 		r_num_A = 1;
 		if( ko_music != 1){
 			ko_music = 1;
+			ko_Bitmap.visible = true;
 			sound.close();
 			sound_ok.play();
 		}

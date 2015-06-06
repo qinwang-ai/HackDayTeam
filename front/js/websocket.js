@@ -36,15 +36,23 @@ if(!window.WebSocket){
      if( data[ 'name'] == 'A'){
          if( data[ 'flag']){
             statusA = 1;
+            hit_Bitmap_A.visible = true;
+            LTweenLite.to( hit_Bitmap_A, 1, {visible:false});
         }else{
             statusA = 0;
+            miss_Bitmap_A.visible = true;
+            LTweenLite.to( miss_Bitmap_A, 1, {visible:false});
         }
      }
      if( data[ 'name'] == 'B'){
          if( data[ 'flag']){
             statusB = 1;
+            hit_Bitmap_B.visible = true;
+            LTweenLite.to( hit_Bitmap_B, 1, {visible:false});
         }else{
             statusB = 0;
+            miss_Bitmap_B.visible = true;
+            LTweenLite.to( miss_Bitmap_B, 1, {visible:false});
         }
      }
   });

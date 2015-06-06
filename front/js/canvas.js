@@ -13,6 +13,9 @@ function load_back_images( imgs_count, load_char_C){
 	var json_str = "([";
 	json_str += '{"name":"'+'back'+'","path":'+'"images/back.jpg"},';
 	json_str += '{"name":"'+'flow'+'","path":'+'"images/flow.png"},';
+	for(var  i = 0;i<=9;i++){
+		json_str += '{"name":"'+'01_time_'+i.toString()+'","path":'+'"images/01_time_'+i.toString()+'.png"},';
+	}
 	json_str+='])';
 	var imgs_DATA = eval( json_str);
 	loadingLayer = new LoadingSample3();
@@ -31,6 +34,11 @@ function display_global_now(){
 		white_layer.addEventListener( LEvent.ENTER_FRAME, display_white_now);
 	}else{
 		if( back_layer.visible == false && start_game == 1){
+			sound = new LSound();
+			sound.load("BGM.mp3");
+			sound.addEventListener( LEvent.COMPLETE, function (){
+				sound.play( 0, Infinity);
+			});
 			back_layer.visible = true;
 			white_layer.removeAllChild();
 			white_layer.removeEventListener( LEvent.ENTER_FRAME, display_white_now);
@@ -82,9 +90,21 @@ function load_char_imagesB( pre, imgs_count, load_char_C){
 		loadingLayer.setProgress(progress)},load_char_C);
 }
 
+function roll_finger(){
+	if( rolling_put == 1){
+		var rolling_Bitmap = new LBitmap( showList_back[ 1+rolling_num]);
+		back_layer.addChild( rolling_Bitmap);
+	}
+	roll_layer.x+=10;
+}
+
 function load_back_complete( result){
 	showList_back.push( new LBitmapData( result["back"]));
 	showList_back.push( new LBitmapData( result["flow"]));
+	for(var  i = 0;i<=9;i++){
+		console.log( i.toString());
+		showList_back.push( new LBitmapData( result[ "01_time_"+i.toString() ]));
+	}
 	//display background
 	back_Bitmap = new LBitmap( showList_back[0]);
 	back_layer.addChild( back_Bitmap);
@@ -96,6 +116,13 @@ function load_back_complete( result){
 
 	flow_layer.x = 120;
 	flow_layer.y = 320;
+	//rolling ---------------start
+	rolling_num = 1;
+	rolling_put = 1;
+	roll_layer = new LSprite();
+	back_layer.addChild( roll_layer);
+	back_layer.addEventListener( LEvent.ENTER_FRAME, roll_finger);
+	//roling ---------------
 	load_char_imagesA( "Asu", imgs_countA, load_char_completeA);
 }
 function load_char_completeA(result){
@@ -297,12 +324,7 @@ function main(){
 	white_layer = new LSprite();
 	addChild( white_layer);
 	back_layer.visible = false;
-	load_back_images( imgs_back_count, load_back_complete);  //load 1back->2A->3B
-	sound = new LSound();
-	sound.load("BGM.mp3");
-	sound.addEventListener( LEvent.COMPLETE, function (){
-		//sound.play( 0, Infinity);
-	});
+		load_back_images( imgs_back_count, load_back_complete);  //load 1back->2A->3B
 }
 //================================================end=================
 
@@ -507,9 +529,10 @@ function display_char_nowB(){
 				statusA = 0;
 				mark_collide = 0;
 			}
-			if( point_B == parseInt( statusB_json[ 'failure'][ r_num_B]['t']) + 1 && final_A_success == 1)
+			if( point_B == parseInt( statusB_json[ 'failure'][ r_num_B]['t']) + 1 && final_A_success == 1){
+				sound.close();
 				point_B = parseInt( statusB_json[ 'failure'][r_num_B][ 't']);
-			else
+			}else
 				point_B = parseInt( statusB_json[ 'failure'][r_num_B][ 's']);
 		}
 	}

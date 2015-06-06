@@ -11,7 +11,7 @@ var moment = require('moment');
 
 var gesture, combo, hp, startI;
 
-var reset = function (argument) {
+var reset = function () {
   startI = 0;
   gesture = {
     A: [],
@@ -87,6 +87,7 @@ app.io.use(function* (next) {
 
 // websocket
 setTimeout(function () {
+  console.log('check start condition: isStart:%s num:%s', isStart, num);
   if(!isStart && num > 0) {
     console.log('websocket: [send] play');
     isStart = true;
@@ -119,6 +120,7 @@ setTimeout(function () {
     if(moment() > deadline) { //如果已经超时
       if(!gesture.A[i] && moment() > deadline) {
         gesture.A[i] = true;
+        console.log('websocket: [send] result %s %s %s', 'A', i, false);
         app.io.emit('result', {
           name: 'A',
           index: i,
@@ -128,6 +130,7 @@ setTimeout(function () {
       }
       if(!gesture.B[i] && moment() > deadline) {
         gesture.B[i] = true;
+        console.log('websocket: [send] result %s %s %s', 'B', i, false);
         app.io.emit('result', {
           name: 'B',
           index: i,
@@ -142,7 +145,7 @@ setTimeout(function () {
   }
 }, 1000);
 
-var server = net.createServer(function(sock) {
+var socketServer = net.createServer(function(sock) {
     // 我们获得一个连接 - 该连接自动关联一个socket对象
     console.log('CONNECTED: ' +
         sock.remoteAddress + ':' + sock.remotePort);
@@ -150,10 +153,15 @@ var server = net.createServer(function(sock) {
     sock.on('data', function(data) {
         console.log('DATA ' + sock.remoteAddress + ': ' + data);
 
+        data = data.toString();
+        if(!data) {
+          return;
+        }
         var user = (data.split('_'))[0];
         var index = (data.split('_'))[1];
         if(isOk(index)) {
           gesture[user][index] = true;
+          console.log('websocket: [send] result %s %s %s', user, index, true);
           app.io.emit('result', {
             name: user,
             index: index,
@@ -166,6 +174,7 @@ var server = net.createServer(function(sock) {
               if(combo.A >= 10 && combo.B < 10) {
                 hp.B--;
                 app.io.emit('attack', 1);
+                console.log('websocket: [send] attack 1');
                 if(!hp.B) {
                   app.io.emit('stop', 'A');
                   reset();
@@ -173,12 +182,14 @@ var server = net.createServer(function(sock) {
               } else if(combo.A < 10 && combo.B >= 10) {
                 hp.A--;
                 app.io.emit('attack', 2);
+                console.log('websocket: [send] attack 2');
                 if(!hp.A) {
                   app.io.emit('stop', 'B');
                   reset();
                 }
               } else if(combo.A >=10 && combo.B >= 10) {
                 app.io.emit('attack', 0);
+                console.log('websocket: [send] attack 0');
               }
             }, 1000);
           }
@@ -196,5 +207,5 @@ var server = net.createServer(function(sock) {
             sock.remoteAddress + ' ' + sock.remotePort);
     });
 });
-server.listen(config.socketport, '25.0.0.116');
+socketServer.listen(config.socketport, '25.0.0.116');
 console.log('The leap socket server is listening port %s.', config.socketport);

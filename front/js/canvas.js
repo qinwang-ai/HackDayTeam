@@ -184,6 +184,8 @@ function load_back_complete( result){
 	// sound mp3
 	sound = new LSound();
 	sound.load("BGM.mp3");
+	sound_ok = new LSound();
+	sound_ok.load( "ko.mp3");
 	$.getJSON("gesture.json",function(data){
 			gesture_json = data;
 	});
@@ -224,6 +226,7 @@ showList_blood = new Array();
 showList_finger = new Array();
 imglistA = {};
 imglistB = {};
+ko_music = 0;
 forward_width = 40;					//forward attack width
 //imgs_countA = 230;
 imgs_countA = 230;
@@ -498,6 +501,11 @@ function display_char_nowA(){
 		statusB = 4;
 		final_A_success = 1;
 		r_num_B = 0;		//SUCCESS_ POSITION
+		if( ko_music != 1){
+			sound.close();
+			sound_ok.play();
+			ko_music = 1;
+		}
 	}
 	//failure
 	if( statusA == 4){					//special detail
@@ -512,7 +520,6 @@ function display_char_nowA(){
 			}
 
 			if( point_A == parseInt( statusA_json[ 'failure'][ r_num_A]['t']) + 1 && final_B_success == 1){
-				sound.close();
 				point_A = parseInt( statusA_json[ 'failure'][r_num_A][ 't']);
 			}else
 				point_A = parseInt( statusA_json[ 'failure'][r_num_A][ 's']);
@@ -602,7 +609,7 @@ function display_char_nowB(){
 		}
 		if(point_B > parseInt( statusB_json['success'][r_num_B]['t'])){
 			if( point_B == parseInt( statusB_json['success'][r_num_B]['t'])+1)
-					point_B = parseInt( statusB_json['success'][r_num_B]['t']-2);
+				point_B = parseInt( statusB_json['success'][r_num_B]['t']-2);
 			else
 				point_B = parseInt( statusB_json['success'][r_num_B]['s']);
 		}
@@ -610,8 +617,11 @@ function display_char_nowB(){
 		statusA = 4;
 		final_B_success = 1;
 		r_num_A = 1;
-		sound_ok = new LSound();
-		sound_ok.load( "ko.mp3");
+		if( ko_music != 1){
+			ko_music = 1;
+			sound.close();
+			sound_ok.play();
+		}
 	}
 	//failure
 	if( statusB == 4){					//special detail
@@ -625,8 +635,7 @@ function display_char_nowB(){
 				mark_collide = 0;
 			}
 			if( point_B == parseInt( statusB_json[ 'failure'][ r_num_B]['t']) + 1 && final_A_success == 1){
-				sound.close();
-				point_B = parseInt( statusB_json[ 'failure'][r_num_B][ 't']);
+							point_B = parseInt( statusB_json[ 'failure'][r_num_B][ 't']);
 			}else
 				point_B = parseInt( statusB_json[ 'failure'][r_num_B][ 's']);
 		}

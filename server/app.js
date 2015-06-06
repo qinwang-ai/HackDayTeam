@@ -8,6 +8,7 @@ var path = require('path');
 var net = require('net');
 var gestureRaw = require('./static/gesture.json');
 var moment = require('moment');
+var debug = require('debug')('app');
 
 var gesture, combo, hp, startI;
 
@@ -80,6 +81,7 @@ app.io.use(function* (next) {
   console.log('Some audience disconnects.');
   if(num === 0) {
     isStart = false;
+    console.log('Game end!');
     reset();
   }
 });
@@ -109,26 +111,41 @@ app.io.use(function* (next) {
 // }, 3000);
 
 // leap socket
-var isOk = function (user, index) {
+var isOk = function (user, types) {
   //TODO根据现在的时间和gesture.json判断
+  var types = types.split(',');
   for(var i = 0; i < gestureRaw.length; i++) {
     var elem = gestureRaw[i];
-    if(!!gesture[user][index]) {
+    // console.log(111);
+    if(!!gesture[user][i]) {
       continue;
     }
-    var tmpTime1 = moment(startTime).add(moment.duration(gestureRaw[i].time)).add(0.5, 's');
-    var tmpTime2 = moment(startTime).add(moment.duration(gestureRaw[i].time)).subtract(0.5, 's');
+    // console.log(222);
+    var tmpTime1 = moment(startTime).add(moment.duration('00:' + gestureRaw[i].time)).subtract(1, 's');
+    var tmpTime2 = moment(startTime).add(moment.duration('00:' + gestureRaw[i].time)).add(1, 's');
     var now = moment();
+    // debug("%s, %s, %s", tmpTime1.format('hh:mm:ss'), now.format('hh:mm:ss'), tmpTime2.format('hh:mm:ss'));
     if(tmpTime1 <= now && now <= tmpTime2) {
-      return true;
+      // console.log(333);
+      for(var j = 0; j < types.length; j++) {
+        if(types[j] === elem.type.toString()) {
+          return i;
+        }
+      }
     }
   }
-  return false;
+  return 0;
 };
 //返回超时未检测错误 每1秒检测一次
-setTimeout(function () {
+setInterval(function () {
+  if(!isStart) {
+    return;
+  }
+
   for(var i = startI; i < gestureRaw.length; i++) {
-    var deadline = moment(startTime).add(moment.duration(gestureRaw[i].time)).add(1, 's');
+    var deadline = moment(startTime).add(moment.duration('00:' + gestureRaw[i].time)).add(1, 's');
+    // console.log(deadline.format('hh:mm:ss'));
+    // console.log('----------')
     if(moment() > deadline) { //如果已经超时
       if(!gesture.A[i] && moment() > deadline) {
         gesture.A[i] = true;
@@ -186,8 +203,13 @@ var socketServer = net.createServer(function(sock) {
           return;
         }
         var user = (data.split('_'))[0];
-        var index = (data.split('_'))[1];
-        if(isOk(user, index)) {
+        var types = (data.split('_'))[1];
+
+        var index = isOk(user, types);
+
+        // console.log(index);
+
+        if(index) {
           gesture[user][index] = true;
           console.log('websocket: [send] result %s %s %s', user, index, true);
           app.io.emit('result', {
@@ -205,6 +227,7 @@ var socketServer = net.createServer(function(sock) {
                 console.log('websocket: [send] attack 1');
                 if(!hp.B) {
                   app.io.emit('stop', 'A');
+                  console.log('Game end!');
                   reset();
                 }
               } else if(combo.A < 10 && combo.B >= 10) {
@@ -213,6 +236,7 @@ var socketServer = net.createServer(function(sock) {
                 console.log('websocket: [send] attack 2');
                 if(!hp.A) {
                   app.io.emit('stop', 'B');
+                  console.log('Game end!');
                   reset();
                 }
               } else if(combo.A >=10 && combo.B >= 10) {

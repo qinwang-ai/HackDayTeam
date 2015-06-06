@@ -67,7 +67,7 @@ setTimeout(function () {
     isStart = true;
     app.io.emit('play', {});
   }
-}, 20 * 1000);
+}, 10 * 1000);
 
 var tmp = 0;
 var t = setInterval(function () {

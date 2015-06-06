@@ -86,15 +86,15 @@ app.io.use(function* (next) {
 
 
 // websocket
-setTimeout(function () {
-  console.log('check start condition: isStart:%s num:%s', isStart, num);
-  if(!isStart && num > 0) {
-    console.log('websocket: [send] play');
-    isStart = true;
-    startTime = moment();
-    app.io.emit('play', {});
-  }
-}, 20 * 1000);
+// setTimeout(function () {
+//   console.log('check start condition: isStart:%s num:%s', isStart, num);
+//   if(!isStart && num > 0) {
+//     console.log('websocket: [send] play');
+//     isStart = true;
+//     startTime = moment();
+//     app.io.emit('play', {});
+//   }
+// }, 20 * 1000);
 
 // var aaatmp = 0;
 // var t = setInterval(function () {
@@ -109,14 +109,26 @@ setTimeout(function () {
 // }, 3000);
 
 // leap socket
-var isOk = function (index) {
+var isOk = function (user, index) {
   //TODO根据现在的时间和gesture.json判断
-  return true;
+  for(var i = 0; i < gestureRaw.length; i++) {
+    var elem = gestureRaw[i];
+    if(!!gesture[user][index]) {
+      continue;
+    }
+    var tmpTime1 = moment(startTime).add(moment.duration(gestureRaw[i].time)).add(0.5, 's');
+    var tmpTime2 = moment(startTime).add(moment.duration(gestureRaw[i].time)).subtract(0.5, 's');
+    var now = moment();
+    if(tmpTime1 <= now && now <= tmpTime2) {
+      return true;
+    }
+  }
+  return false;
 };
 //返回超时未检测错误 每1秒检测一次
 setTimeout(function () {
   for(var i = startI; i < gestureRaw.length; i++) {
-    var deadline = moment(startTime).add(moment.duration(gestureRaw[i].time)).add(1, 'm');
+    var deadline = moment(startTime).add(moment.duration(gestureRaw[i].time)).add(1, 's');
     if(moment() > deadline) { //如果已经超时
       if(!gesture.A[i] && moment() > deadline) {
         gesture.A[i] = true;
@@ -174,7 +186,7 @@ var socketServer = net.createServer(function(sock) {
         }
         var user = (data.split('_'))[0];
         var index = (data.split('_'))[1];
-        if(isOk(index)) {
+        if(isOk(user, index)) {
           gesture[user][index] = true;
           console.log('websocket: [send] result %s %s %s', user, index, true);
           app.io.emit('result', {
@@ -219,7 +231,7 @@ var socketServer = net.createServer(function(sock) {
             sock.remoteAddress + ' ' + sock.remotePort);
     });
 });
-socketServer.listen(config.socketport, '25.0.0.116');
+socketServer.listen(config.socketport, '192.168.60.27');
 console.log('The leap socket server is listening port %s.', config.socketport);
 
 process.on('uncaughtException', function(err) {

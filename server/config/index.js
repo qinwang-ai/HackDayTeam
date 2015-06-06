@@ -1,7 +1,8 @@
 'use strict';
 
 var config = {
-  port: 3000,
+  webport: 3000,
+  socketport:7556,
   keys: ['key_for_cookie', 'aposidfjpadsjf']
 };
 

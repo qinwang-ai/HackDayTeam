@@ -40,13 +40,33 @@ app.use(middlewares.staticCache({
 app.use(middlewares.router(app));
 routes(app);
 
-app.listen(config.port);
-console.log('The server is listening port %s.', config.port);
+app.listen(config.webport);
+console.log('The server is listening port %s.', config.webport);
 
 // websocket
-
 app.io.use(function* (next) {
   console.log('New audience connects.');
+
+  // web socket test
+  setTimeout(function () {
+    console.log('websocket: [send] play');
+    this.broadcast.emit('play');
+  }, 1000);
+  var tmp = 0;
+  var t = setInterval(function () {
+    console.log('websocket: [send] result')
+    this.broadcast.emit('result', {
+      name:  'A',
+      index: tmp++,
+      flag: true
+    });
+  }, 5000);
+
+  setTimeout(function () {
+    clearInterval(t);
+    this.broadcast.emit('stop', 'A');
+  }, 30 * 1000);
+
   yield* next;
   console.log('Some audience disconnects.');
 });
@@ -57,5 +77,7 @@ app.io.route('play', function* (next) {
   this.broadcast.emit('play');
 });
 
+
 // leap socket
-leap.l
+leap.listen(config.socketport, '25.0.0.116');
+console.log('The leap socket server is listening port %s.', config.socketport);

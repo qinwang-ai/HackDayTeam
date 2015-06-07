@@ -233,7 +233,7 @@ var socketServer = net.createServer(function(sock) {
             sock.remoteAddress + ' ' + sock.remotePort);
     });
 });
-socketServer.listen(config.socketport, '25.0.0.120');
+socketServer.listen(config.socketport, '192.168.1.101');
 console.log('The leap socket server is listening port %s.', config.socketport);
 
 process.on('uncaughtException', function(err) {

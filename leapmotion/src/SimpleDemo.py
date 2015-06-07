@@ -65,7 +65,9 @@ class SampleListener(Leap.Listener):
             # Classfication
 
             if (Strength < 0.01):
-                if (delta[0]<0.5 and delta[1]<0.5 and delta[2]>1 and delta[3]>1 and delta[4]>1):
+                if (delta[0]<0.5 and delta[1]<0.5 and delta[2]>1 and delta[3]>1 and delta[4]<0.5):
+                    print "start"
+                elif (delta[0]<0.5 and delta[1]<0.5 and delta[2]>1 and delta[3]>1 and delta[4]>1):
                     print "One!"
                     gesture = "1"
                 elif (delta[0]<0.5 and delta[1]<0.5 and delta[2]<0.5 and delta[3]>1 and delta[4]>1):

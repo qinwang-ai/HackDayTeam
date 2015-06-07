@@ -9,6 +9,4 @@ Gesture
 5	天女散花			maxX
 6	挥肘子			Ticket
 7	擦玻璃			ifdi
-8	弹钢琴			MinDownVelocity
-9	双手大树			Hands
-10	拳击 Duang		maxZ				
+8	双手大树			Hands		maxZ				

@@ -33,20 +33,23 @@ function load_back_images( imgs_count, load_char_C){
 	LLoadManage.load( imgs_DATA, function ( progress){
 		loadingLayer.setProgress(progress)},load_char_C);
 }
+rect_SPEED = 10;
 function display_global_now(){
 	if( ( statusA !=4 || statusB !=4) && mark_collide == 1){
 		statusB = 4;
 		statusA = 4;
 	}
-	if( bwTT_isw == 0){
-		bwTT_isw = 1;
-		Bitmap_rect_w.visible = false;
-		Bitmap_rect_b.visible = true;
-	}else{
+	if( bwTT_isw == rect_SPEED){
 		bwTT_isw = 0;
-		Bitmap_rect_w.visible = true;
-		Bitmap_rect_b.visible = false;
+		if ( Bitmap_rect_w.visible == false){
+			Bitmap_rect_w.visible = true;
+			Bitmap_rect_b.visible = false;
+		}else{
+			Bitmap_rect_w.visible = false;
+			Bitmap_rect_b.visible = true;
+		}
 	}
+	bwTT_isw ++;
 
 	if( start_game == 0 && white_layer.y != 50){
 		back_layer.visible = false;

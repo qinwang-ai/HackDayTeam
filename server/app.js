@@ -174,6 +174,10 @@ setInterval(function () {
   }
 }, 50);
 
+
+var a_index = 0;
+var b_index = 0;
+
 var socketServer = net.createServer(function(sock) {
     // 我们获得一个连接 - 该连接自动关联一个socket对象
     console.log('CONNECTED: ' +
@@ -217,7 +221,10 @@ var socketServer = net.createServer(function(sock) {
             index: index,
             flag: true
           });
-          app.io.emit('attack', 1);
+          a_index++;
+          if(a_index%3) {
+            app.io.emit('attack', 1);
+          }
 
           gesture.B[index] = true;
           app.io.emit('result', {
@@ -225,7 +232,11 @@ var socketServer = net.createServer(function(sock) {
             index: index,
             flag: tb[index]
           });
-          if(tb[index]) app.io.emit('attack', 2);
+          if(tb[index]) {
+            b_index++;
+            if(b_index%3)
+              app.io.emit('attack', 2);
+          }
 
           combo[user]++;
           //触发攻击

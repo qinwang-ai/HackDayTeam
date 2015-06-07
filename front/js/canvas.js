@@ -49,6 +49,9 @@ function display_global_now(){
 		statusB = 4;
 		statusA = 4;
 	}
+	if( sum_x == 24){
+		startA = 3;
+	}
 
 	if( start_game == 0 && white_layer.y != 50){
 		back_layer.visible = false;
@@ -118,6 +121,7 @@ function sms (str) {
 }
 roll_Array = new Array();
 flag_again = new Array();
+sum_x  =0;
 function roll_finger(){
 	var phore_T =  1.5*1000+10;
 	var pre_phore_T = 1.5*1000+100;
@@ -125,6 +129,7 @@ function roll_finger(){
 	for( var x in gesture_json){
 		var x_t = sms( gesture_json[x].time);
 		if ( sound_current < x_t-phore_T && sound_current>x_t - pre_phore_T&& flag_again[ gesture_json[ x].index]===undefined){
+			sum_x ++;
 			var rolling_Bitmap = new LBitmap( showList_finger[ gesture_json[ x].type]);
 			now_index = gesture_json[ x].index;
 			roll_layer.addChild( rolling_Bitmap);

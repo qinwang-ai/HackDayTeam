@@ -50,7 +50,7 @@ function display_global_now(){
 		statusA = 4;
 	}
 	if( sum_x == 24){
-		startA = 3;
+		statusA = 3;
 	}
 
 	if( start_game == 0 && white_layer.y != 50){

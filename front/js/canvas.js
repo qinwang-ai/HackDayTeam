@@ -105,8 +105,8 @@ function sms (str) {
 roll_Array = new Array();
 flag_again = new Array();
 function roll_finger(){
-	var phore_T = 10;
-	var pre_phore_T = 100;
+	var phore_T = 6095+10;
+	var pre_phore_T = 6095+100;
 	sound_current = Math.floor(sound.data.currentTime*1000);
 	for( var x in gesture_json){
 		var x_t = sms( gesture_json[x].time);
@@ -114,6 +114,7 @@ function roll_finger(){
 			var rolling_Bitmap = new LBitmap( showList_finger[ gesture_json[ x].type]);
 			roll_layer.addChild( rolling_Bitmap);
 	 		roll_Array.push( rolling_Bitmap);
+	 		console.log('start', (new Date()).getTime());
 			flag_again[ gesture_json[ x].index] = true;
 			break;
 		}
@@ -126,7 +127,7 @@ function roll_finger(){
 		if( roll_Array[0].x < -500){
 			roll_layer.removeChild( roll_Array[0]);
 			roll_Array.shift();
-			console.log( (new Date()).getTime());
+			console.log( 'stop', (new Date()).getTime());
 		}
 	}
 }

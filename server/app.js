@@ -87,29 +87,6 @@ app.io.use(function* (next) {
 });
 
 
-// websocket
-// setTimeout(function () {
-//   console.log('check start condition: isStart:%s num:%s', isStart, num);
-//   if(!isStart && num > 0) {
-//     console.log('websocket: [send] play');
-//     isStart = true;
-//     startTime = moment();
-//     app.io.emit('play', {});
-//   }
-// }, 20 * 1000);
-
-// var aaatmp = 0;
-// var t = setInterval(function () {
-//   if(isStart && num > 0) {
-//     console.log('websocket: [send] result');
-//     app.io.emit('result', {
-//       name:  'A',
-//       index: aaatmp++,
-//       flag: true
-//     });
-//   }
-// }, 3000);
-
 // leap socket
 var isOk = function (user, types) {
   //TODO根据现在的时间和gesture.json判断
@@ -121,8 +98,8 @@ var isOk = function (user, types) {
       continue;
     }
     // console.log(222);
-    var tmpTime1 = moment(startTime).add(moment.duration('00:' + gestureRaw[i].time)).subtract(1, 's');
-    var tmpTime2 = moment(startTime).add(moment.duration('00:' + gestureRaw[i].time)).add(1, 's');
+    var tmpTime1 = moment(startTime).add(moment.duration('00:' + gestureRaw[i].time)).subtract(0.5, 's');
+    var tmpTime2 = moment(startTime).add(moment.duration('00:' + gestureRaw[i].time)).add(0.5, 's');
     var now = moment();
     // debug("%s, %s, %s", tmpTime1.format('hh:mm:ss'), now.format('hh:mm:ss'), tmpTime2.format('hh:mm:ss'));
     if(tmpTime1 <= now && now <= tmpTime2) {
@@ -172,7 +149,7 @@ setInterval(function () {
       break;
     }
   }
-}, 1000);
+}, 50);
 
 var socketServer = net.createServer(function(sock) {
     // 我们获得一个连接 - 该连接自动关联一个socket对象
@@ -256,7 +233,7 @@ var socketServer = net.createServer(function(sock) {
             sock.remoteAddress + ' ' + sock.remotePort);
     });
 });
-socketServer.listen(config.socketport, '192.168.60.27');
+socketServer.listen(config.socketport, '25.0.0.120');
 console.log('The leap socket server is listening port %s.', config.socketport);
 
 process.on('uncaughtException', function(err) {

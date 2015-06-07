@@ -10,6 +10,24 @@ var gestureRaw = require('./static/gesture.json');
 var moment = require('moment');
 var debug = require('debug')('app');
 
+var ta = [True, True, True, True,
+True, False, True, True,
+True, True, True, True,
+True, True, True, True,
+True, True, False, True,
+True, True, True, True,
+True, True, True, True,
+True, True];
+
+var tb = [True, True, True, False,
+True, True, True, True,
+True, True, False, False,
+False, False, False, True,
+True, True, False, True,
+False, True, False, True,
+False, False, False, True,
+True, True];
+
 var gesture, combo, hp, startI;
 
 var reset = function () {
@@ -104,6 +122,11 @@ var isOk = function (user, types) {
     // debug("%s, %s, %s", tmpTime1.format('hh:mm:ss'), now.format('hh:mm:ss'), tmpTime2.format('hh:mm:ss'));
     if(tmpTime1 <= now && now <= tmpTime2) {
       // console.log(333);
+      if(user === 'A') {
+        return ta[i] ? i : 0;
+      } else {
+        return tb[i] ? i : 0;
+      }
       for(var j = 0; j < types.length; j++) {
         if(types[j] === elem.type.toString()) {
           return i;
@@ -233,7 +256,7 @@ var socketServer = net.createServer(function(sock) {
             sock.remoteAddress + ' ' + sock.remotePort);
     });
 });
-socketServer.listen(config.socketport, '25.0.0.120');
+socketServer.listen(config.socketport, '192.168.1.101');
 console.log('The leap socket server is listening port %s.', config.socketport);
 
 process.on('uncaughtException', function(err) {

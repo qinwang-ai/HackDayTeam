@@ -119,30 +119,30 @@ function sms (str) {
 roll_Array = new Array();
 flag_again = new Array();
 function roll_finger(){
-	var phore_T = 6095+10;
-	var pre_phore_T = 6095+100;
+	var phore_T =  1.5*1000+10;
+	var pre_phore_T = 1.5*1000+100;
 	sound_current = Math.floor(sound.data.currentTime*1000);
 	for( var x in gesture_json){
-		var x_t = sms( gesture_json[x].time)-1000*13;
+		var x_t = sms( gesture_json[x].time);
 		if ( sound_current < x_t-phore_T && sound_current>x_t - pre_phore_T&& flag_again[ gesture_json[ x].index]===undefined){
 			var rolling_Bitmap = new LBitmap( showList_finger[ gesture_json[ x].type]);
+			now_index = gesture_json[ x].index;
 			roll_layer.addChild( rolling_Bitmap);
 	 		roll_Array.push( rolling_Bitmap);
-	 		console.log('start', (new Date()).getTime());
 			flag_again[ gesture_json[ x].index] = true;
 			break;
 		}
 		//console.log( gesture_json[x].time);
 	}
-	if( roll_Array.length>0 ){
+	if( roll_Array.length > 0 ){
 		for( var x in roll_Array){
-			roll_Array[x].x -= 10;
+			roll_Array[x].x -= 20;
 		}
 		if( roll_Array[0].x < -950){
 			roll_layer.removeChild( roll_Array[0]);
 			roll_Array.shift();
-			console.log( 'stop', (new Date()).getTime());
 		}
+
 	}
 }
 

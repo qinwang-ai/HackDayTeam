@@ -44,6 +44,7 @@ if(!window.WebSocket){
             LTweenLite.to( miss_Bitmap_A, 0.5, {visible:false});
         }
      }
+
      if( data[ 'name'] == 'B'){
          if( data[ 'flag']){
             statusB = 1;

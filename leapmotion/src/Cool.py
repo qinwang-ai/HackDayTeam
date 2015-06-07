@@ -6,7 +6,7 @@ import socket
 from Leap import CircleGesture, KeyTapGesture, ScreenTapGesture, SwipeGesture
 
 PLAYER = 'A_'
-HOST = '192.168.1.141'
+HOST = '25.0.0.120'
 PORT = 7556
 BUFSIZE = 1024
 ADDR = (HOST, PORT)
@@ -47,6 +47,8 @@ maxX = 0
 strenNum = 0
 stren0 = 0
 di = [0,0]
+ifstart = 0
+
 
 while True:
 	label = []
@@ -97,10 +99,9 @@ while True:
 				label.append(2)
 			else:
 				label.append(4)
-			label.append(4)
 		if (maxX > 200):
 			label.append(5)
-		label.append(6)
+		#label.append(6)
 		if di == '0000':
 			label.append(7)
 		if (keyTapNum > 1):
@@ -127,32 +128,36 @@ while True:
 			# Classfication
 
 			if (Strength < 0.01):
+				if (ifstart == 0 and delta[0]<0.5 and delta[1]<0.5 and delta[2]>1 and delta[3]>1 and delta[4]<0.5):
+					ifstart = 1
+					label.append(100)
+					print "start"
 				if (delta[0]<0.5 and delta[1]<0.5 and delta[2]>1 and delta[3]>1 and delta[4]>1):
-					print "One!"
 					label.append(11)
 				elif (delta[0]<0.5 and delta[1]<0.5 and delta[2]<0.5 and delta[3]>1 and delta[4]>1):
-					print "Two!"
 					label.append(12)
 				elif (delta[1]<0.5 and delta[2]<0.5 and delta[3]<0.5 and delta[4]>1):
-					print "Three!"
 					label.append(13)
 				elif (delta[1]<0.5 and delta[2]<0.5 and delta[3]<0.5 and delta[4]<0.5 and SR<100):
-					print "Four!"
 					label.append(14)
 				elif (delta[1]<0.5 and delta[2]<0.5 and delta[3]<0.5 and delta[4]<0.5 and SR>150):
-					print "Five!"
 					label.append(15)
 
 		# Send
-		senddata = ''
-		senddata = senddata + PLAYER
-		for item in label:
-			senddata = senddata + str(item)
-			if item != label[-1]:
-				senddata = senddata + '_'
-		print senddata
-		client.send(senddata)
-		client.recv(1024)
+		if ifstart == 1:
+			senddata = 'start'
+			ifstart = 2
+		else:
+			senddata = ''
+			senddata = senddata + PLAYER
+			for item in label:
+				senddata = senddata + str(item)
+				if item != label[-1]:
+					senddata = senddata + ','
+		if len(label)!=0:
+			print senddata
+			client.send(senddata)
+			client.recv(1024)
 
 		print '**********'
 		circleNum = 0

@@ -49,7 +49,7 @@ function display_global_now(){
 		statusB = 4;
 		statusA = 4;
 	}
-	if( sum_x == gesture_json.length){
+	if( sum_x == 24){
 		startA = 3;
 	}
 

@@ -18,8 +18,10 @@ function load_back_images( imgs_count, load_char_C){
 	json_str += '{"name":"'+'ko'+'","path":'+'"images/KO.png"},';
 	json_str += '{"name":"'+'hit'+'","path":'+'"images/hit.png"},';
 	json_str += '{"name":"'+'miss'+'","path":'+'"images/miss.png"},';
-	for(var  i = 0;i<=9;i++){
-		json_str += '{"name":"'+'01_time_'+i.toString()+'","path":'+'"images/01_time_'+i.toString()+'.png"},';
+	json_str += '{"name":"'+'rect_w'+'","path":'+'"images/rect_w.png"},';
+	json_str += '{"name":"'+'rect_b'+'","path":'+'"images/rect_b.png"},';
+	for(var  i = 1;i<=8;i++){
+		json_str += '{"name":"p'+i.toString()+'","path":'+'"images/p'+i.toString()+'.png"},';
 	}
 	for (var i = 1; i <= 9; i++) {
 		json_str += '{"name":"'+'b0'+i.toString()+'","path":'+'"images/b0'+i.toString()+'.png"},';
@@ -36,6 +38,16 @@ function display_global_now(){
 		statusB = 4;
 		statusA = 4;
 	}
+	if( bwTT_isw == 0){
+		bwTT_isw = 1;
+		Bitmap_rect_w.visible = false;
+		Bitmap_rect_b.visible = true;
+	}else{
+		bwTT_isw = 0;
+		Bitmap_rect_w.visible = true;
+		Bitmap_rect_b.visible = false;
+	}
+
 	if( start_game == 0 && white_layer.y != 50){
 		back_layer.visible = false;
 		white_layer.y = 50;
@@ -109,7 +121,7 @@ function roll_finger(){
 	var pre_phore_T = 6095+100;
 	sound_current = Math.floor(sound.data.currentTime*1000);
 	for( var x in gesture_json){
-		var x_t = sms( gesture_json[x].time);
+		var x_t = sms( gesture_json[x].time)-1000*13;
 		if ( sound_current < x_t-phore_T && sound_current>x_t - pre_phore_T&& flag_again[ gesture_json[ x].index]===undefined){
 			var rolling_Bitmap = new LBitmap( showList_finger[ gesture_json[ x].type]);
 			roll_layer.addChild( rolling_Bitmap);
@@ -122,9 +134,9 @@ function roll_finger(){
 	}
 	if( roll_Array.length>0 ){
 		for( var x in roll_Array){
-			roll_Array[x].x -= 5;
+			roll_Array[x].x -= 10;
 		}
-		if( roll_Array[0].x < -500){
+		if( roll_Array[0].x < -950){
 			roll_layer.removeChild( roll_Array[0]);
 			roll_Array.shift();
 			console.log( 'stop', (new Date()).getTime());
@@ -160,6 +172,7 @@ function building_blood(){
 	//blood ----------------end
 }
 // include rolling-----------------------------------------------------BACK IMAGE BUILD
+bwTT_isw = 0;
 function load_back_complete( result){
 	showList_back.push( new LBitmapData( result["back"]));
 	showList_back.push( new LBitmapData( result["flow"]));
@@ -167,12 +180,14 @@ function load_back_complete( result){
 	showList_back.push( new LBitmapData( result["ko"]));		//3
 	showList_back.push( new LBitmapData( result["hit"]));//4
 	showList_back.push( new LBitmapData( result["miss"]));//5
+	showList_back.push( new LBitmapData( result["rect_w"]));//6
+	showList_back.push( new LBitmapData( result["rect_b"]));//7
 	for (var i = 1; i <= 9; i++) {
 		showList_blood.push( new LBitmapData ( result[ "b0" + i.toString()]));
 	}
 	showList_blood.push( new LBitmapData ( result[ "b10"]));
-	for(var  i = 0;i<=9;i++){
-		showList_finger.push( new LBitmapData( result[ "01_time_"+i.toString() ]));
+	for(var  i = 1;i<=9;i++){
+		showList_finger.push( new LBitmapData( result[ "p"+i.toString() ]));
 	}
 	//display background
 	back_Bitmap = new LBitmap( showList_back[0]);
@@ -183,8 +198,9 @@ function load_back_complete( result){
 	flow_layer.addChild( flow_Bitmap);
 	back_layer.addChild( flow_layer);
 
-	flow_layer.x = 120;
-	flow_layer.y = 320;
+	flow_layer.x = 0;
+	flow_layer.y = 500;
+	//flow_layer.scaleX = 0.;
 	// flow-------------end
 	//ko hit miss
 	ko_Bitmap = new LBitmap( showList_back[3]);
@@ -208,6 +224,18 @@ function load_back_complete( result){
 	miss_Bitmap_A.x = 240;
 	miss_Bitmap_A.y = 200;
 	miss_Bitmap_A.visible = false;
+	//rect
+	Bitmap_rect_w = new LBitmap( showList_back[6]);
+	back_layer.addChild( Bitmap_rect_w);
+	Bitmap_rect_w.x = 40;
+	Bitmap_rect_w.y = 480;
+
+	Bitmap_rect_b = new LBitmap( showList_back[7]);
+	back_layer.addChild( Bitmap_rect_b);
+	Bitmap_rect_b.x = 62;
+	Bitmap_rect_b.y = 510;
+	Bitmap_rect_w.visible = false;
+//rect end
 
 	hit_Bitmap_B = new LBitmap( showList_back[4]);
 	back_layer.addChild( hit_Bitmap_B);
@@ -244,8 +272,8 @@ function load_back_complete( result){
 		rolling_put = rolling_speed;
 		roll_layer = new LSprite();
 		back_layer.addChild( roll_layer);
-		roll_layer.x = 800;
-		roll_layer.y = 330;
+		roll_layer.x = 900;
+		roll_layer.y = 603;
 				//back_layer.addEventListener( LEvent.ENTER_FRAME, roll_finger);
 		Roll_INTERVAL = setInterval( "roll_finger()", 50);
 	});
@@ -280,8 +308,8 @@ imgs_countA = 230;
 imgs_countB = 650;
 init_margin_leftA = -100;
 init_margin_leftB = 300;
-A_layer_margin_Top = 175;
-B_layer_margin_Top = 150;
+A_layer_margin_Top = 25;//85;
+B_layer_margin_Top = 0;//60;
 A_attacking_times_MAX = 30;
 B_attacking_times_MAX = 30;
 blood_A = 9;

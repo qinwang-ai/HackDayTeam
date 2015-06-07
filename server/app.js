@@ -217,6 +217,7 @@ var socketServer = net.createServer(function(sock) {
             index: index,
             flag: true
           });
+          app.io.emit('attack', 1);
 
           gesture.B[index] = true;
           app.io.emit('result', {
@@ -224,6 +225,7 @@ var socketServer = net.createServer(function(sock) {
             index: index,
             flag: tb[index]
           });
+          if(tb[index]) app.io.emit('attack', 2);
 
           combo[user]++;
           //触发攻击

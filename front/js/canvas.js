@@ -33,14 +33,8 @@ function load_back_images( imgs_count, load_char_C){
 	LLoadManage.load( imgs_DATA, function ( progress){
 		loadingLayer.setProgress(progress)},load_char_C);
 }
-rect_SPEED = 10;
-function display_global_now(){
-	if( ( statusA !=4 || statusB !=4) && mark_collide == 1){
-		statusB = 4;
-		statusA = 4;
-	}
-	if( bwTT_isw == rect_SPEED){
-		bwTT_isw = 0;
+rect_SPEED = 3;
+function pm_danteng(){
 		if ( Bitmap_rect_w.visible == false){
 			Bitmap_rect_w.visible = true;
 			Bitmap_rect_b.visible = false;
@@ -48,8 +42,13 @@ function display_global_now(){
 			Bitmap_rect_w.visible = false;
 			Bitmap_rect_b.visible = true;
 		}
+}
+
+function display_global_now(){
+	if( ( statusA !=4 || statusB !=4) && mark_collide == 1){
+		statusB = 4;
+		statusA = 4;
 	}
-	bwTT_isw ++;
 
 	if( start_game == 0 && white_layer.y != 50){
 		back_layer.visible = false;
@@ -237,7 +236,8 @@ function load_back_complete( result){
 	back_layer.addChild( Bitmap_rect_b);
 	Bitmap_rect_b.x = 62;
 	Bitmap_rect_b.y = 510;
-	Bitmap_rect_w.visible = false;
+	Bitmap_rect_b.visible = false;
+	// setInterval( "pm_danteng()", 74);
 //rect end
 
 	hit_Bitmap_B = new LBitmap( showList_back[4]);

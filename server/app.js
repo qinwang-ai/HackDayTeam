@@ -10,23 +10,23 @@ var gestureRaw = require('./static/gesture.json');
 var moment = require('moment');
 var debug = require('debug')('app');
 
-var ta = [True, True, True, True,
-True, False, True, True,
-True, True, True, True,
-True, True, True, True,
-True, True, False, True,
-True, True, True, True,
-True, True, True, True,
-True, True];
+var ta = [true, true, true, true,
+true, false, true, true,
+true, true, true, true,
+true, true, true, true,
+true, true, false, true,
+true, true, true, true,
+true, true, true, true,
+true, true];
 
-var tb = [True, True, True, False,
-True, True, True, True,
-True, True, False, False,
-False, False, False, True,
-True, True, False, True,
-False, True, False, True,
-False, False, False, True,
-True, True];
+var tb = [true, true, true, false,
+true, true, true, true,
+true, true, false, false,
+false, false, false, true,
+true, true, false, true,
+false, true, false, true,
+false, false, false, true,
+true, true];
 
 var gesture, combo, hp, startI;
 
@@ -217,6 +217,14 @@ var socketServer = net.createServer(function(sock) {
             index: index,
             flag: true
           });
+
+          gesture.B[index] = true;
+          app.io.emit('result', {
+            name: 'B',
+            index: index,
+            flag: tb[index]
+          });
+
           combo[user]++;
           //触发攻击
           if(combo[user] === config.comboNum) {
@@ -256,7 +264,7 @@ var socketServer = net.createServer(function(sock) {
             sock.remoteAddress + ' ' + sock.remotePort);
     });
 });
-socketServer.listen(config.socketport, '192.168.1.101');
+socketServer.listen(config.socketport, '192.168.1.109');
 console.log('The leap socket server is listening port %s.', config.socketport);
 
 process.on('uncaughtException', function(err) {
